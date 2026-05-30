@@ -6,11 +6,12 @@
   --muted: #78716c;
   --border: #e7e5e4;
   --card: #ffffff;
-  /* Group accents */
-  --group-a: #2563eb;
-  --group-a-soft: #eff6ff;
-  --group-b: #db2777;
-  --group-b-soft: #fdf2f8;
+  /* Group accents — peacock/gold rush, as bright as possible while still
+     meeting the AA contrast threshold (~4.5:1) on the off-white background */
+  --group-a: #0d7e92; /* peacock — 4.55:1 */
+  --group-a-soft: #ecf7fa;
+  --group-b: #a46407; /* gold rush — 4.57:1 */
+  --group-b-soft: #fef9e7;
 }
 
 @theme inline {
@@ -24,6 +25,7 @@
   --color-group-b: var(--group-b);
   --color-group-b-soft: var(--group-b-soft);
   --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-display);
 }
 
 body {
