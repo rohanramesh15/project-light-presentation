@@ -10,11 +10,23 @@ type Config = {
   group_b_name: string;
 };
 
-const FIELDS: { key: keyof Config; label: string; hint: string }[] = [
-  { key: "question", label: "Question", hint: "Shown on the forms and the presentation screen." },
-  { key: "qr_title", label: "QR screen title", hint: "Heading above the two QR codes." },
-  { key: "group_a_name", label: "Group A name", hint: "Left side of the board." },
-  { key: "group_b_name", label: "Group B name", hint: "Right side of the board." },
+type Field = { key: keyof Config; label: string; hint: string };
+
+const SECTIONS: { title: string; fields: Field[] }[] = [
+  {
+    title: "Presentation",
+    fields: [
+      { key: "question", label: "Question", hint: "Shown on the forms and the presentation screen." },
+      { key: "group_a_name", label: "Group A name", hint: "Left side of the board (also labels its QR code)." },
+      { key: "group_b_name", label: "Group B name", hint: "Right side of the board (also labels its QR code)." },
+    ],
+  },
+  {
+    title: "QR code",
+    fields: [
+      { key: "qr_title", label: "QR screen title", hint: "Heading above the two QR codes." },
+    ],
+  },
 ];
 
 export default function Dashboard() {
@@ -73,51 +85,57 @@ export default function Dashboard() {
         </Link>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-6">
-        <h2 className="mb-5 text-sm font-semibold uppercase tracking-wide text-muted">
-          Settings
-        </h2>
+      {!config ? (
+        <p className="text-sm text-muted">Loading…</p>
+      ) : (
+        <div className="space-y-4">
+          {SECTIONS.map((section) => (
+            <section
+              key={section.title}
+              className="rounded-xl border border-border bg-card p-6"
+            >
+              <h2 className="mb-5 text-sm font-semibold uppercase tracking-wide text-muted">
+                {section.title}
+              </h2>
+              <div className="space-y-5">
+                {section.fields.map((f) => (
+                  <label key={f.key} className="block">
+                    <span className="text-sm font-medium">{f.label}</span>
+                    <input
+                      className="mt-1.5 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground/40"
+                      value={config[f.key]}
+                      onChange={(e) =>
+                        setConfig({ ...config, [f.key]: e.target.value })
+                      }
+                    />
+                    <span className="mt-1 block text-xs text-muted">{f.hint}</span>
+                  </label>
+                ))}
+              </div>
+            </section>
+          ))}
 
-        {!config ? (
-          <p className="text-sm text-muted">Loading…</p>
-        ) : (
-          <div className="space-y-5">
-            {FIELDS.map((f) => (
-              <label key={f.key} className="block">
-                <span className="text-sm font-medium">{f.label}</span>
-                <input
-                  className="mt-1.5 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground/40"
-                  value={config[f.key]}
-                  onChange={(e) =>
-                    setConfig({ ...config, [f.key]: e.target.value })
-                  }
-                />
-                <span className="mt-1 block text-xs text-muted">{f.hint}</span>
-              </label>
-            ))}
-
-            <div className="flex items-center gap-3 pt-2">
-              <button
-                onClick={save}
-                disabled={status === "saving"}
-                className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition hover:opacity-90 disabled:opacity-50"
-              >
-                {status === "saving"
-                  ? "Saving…"
-                  : status === "saved"
-                    ? "Saved ✓"
-                    : "Save changes"}
-              </button>
-              <button
-                onClick={reset}
-                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted transition hover:border-group-b hover:text-group-b"
-              >
-                Reset words
-              </button>
-            </div>
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              onClick={save}
+              disabled={status === "saving"}
+              className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition hover:opacity-90 disabled:opacity-50"
+            >
+              {status === "saving"
+                ? "Saving…"
+                : status === "saved"
+                  ? "Saved ✓"
+                  : "Save changes"}
+            </button>
+            <button
+              onClick={reset}
+              className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted transition hover:border-group-b hover:text-group-b"
+            >
+              Reset words
+            </button>
           </div>
-        )}
-      </section>
+        </div>
+      )}
     </main>
   );
 }
