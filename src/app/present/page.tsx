@@ -54,7 +54,7 @@ export default function PresentPage() {
   }, []);
 
   return (
-    <main className="flex h-dvh flex-col overflow-hidden">
+    <main className="flex h-dvh flex-col overflow-hidden bg-white text-foreground">
       <header className="shrink-0 px-8 pt-8 pb-4 text-center">
         <div className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-widest text-muted">
           <span
@@ -100,14 +100,12 @@ function GroupColumn({
   );
   const total = words.reduce((s, w) => s + w.count, 0);
 
-  const color = variant === "a" ? "var(--group-a)" : "var(--group-b)";
-  const soft = variant === "a" ? "bg-group-a-soft" : "bg-group-b-soft";
   const divider = variant === "a" ? "border-r border-border" : "";
 
   return (
-    <section className={`flex min-h-0 flex-col ${soft} ${divider}`}>
+    <section className={`flex min-h-0 flex-col bg-white ${divider}`}>
       <div className="shrink-0 px-6 py-4 text-center">
-        <h2 className="text-2xl font-bold tracking-tight" style={{ color }}>
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
           {name}
         </h2>
         <p className="text-xs text-muted">{total} words</p>
@@ -120,9 +118,8 @@ function GroupColumn({
           words.map((w) => (
             <span
               key={w.text.toLowerCase()}
-              className="word-pop font-semibold leading-tight transition-all duration-300"
+              className="word-pop font-semibold leading-tight text-foreground transition-all duration-300"
               style={{
-                color,
                 fontSize: `${1.4 + Math.min(w.count, 8) * 0.5}rem`,
                 opacity: 0.55 + Math.min(w.count, 6) * 0.075,
               }}
