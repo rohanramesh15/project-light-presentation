@@ -121,7 +121,13 @@ export default function SubmitPage() {
         />
       </div>
 
-      {error && <p className="mt-4 text-sm text-group-b">{error}</p>}
+      {hasSpace ? (
+        <p className="mt-2 text-sm text-group-b">
+          Please enter only one word at a time.
+        </p>
+      ) : (
+        error && <p className="mt-4 text-sm text-group-b">{error}</p>
+      )}
 
       <div className="mt-auto">
         <button
