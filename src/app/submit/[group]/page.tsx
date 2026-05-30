@@ -21,9 +21,23 @@ export default function SubmitPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/config")
-      .then((r) => r.json())
-      .then(setConfig);
+    let active = true;
+    const load = () =>
+      fetch("/api/config")
+        .then((r) => r.json())
+        .then((c) => {
+          if (active) setConfig(c);
+        })
+        .catch(() => {});
+
+    load();
+    // Poll so the form picks up any settings changes (question, group names)
+    // without the participant needing to refresh.
+    const timer = setInterval(load, 4000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
   }, []);
 
   if (!valid) {
@@ -39,10 +53,16 @@ export default function SubmitPage() {
   const groupName =
     group === "a" ? config?.group_a_name : config?.group_b_name;
 
+  const hasSpace = /\s/.test(pending.trim());
+
   async function submit() {
     const word = pending.trim();
     if (!word) {
       setError("Enter a word first.");
+      return;
+    }
+    if (hasSpace) {
+      // Already signalled live via the red input border; just block the send.
       return;
     }
 
@@ -69,7 +89,7 @@ export default function SubmitPage() {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-6 py-10">
       <div
-        className="mb-1 font-display text-sm font-bold uppercase tracking-widest"
+        className="mb-3 font-display text-sm font-bold uppercase tracking-widest"
         style={{ color: accent }}
       >
         {groupName ?? (group === "a" ? "Group A" : "Group B")}
@@ -78,7 +98,7 @@ export default function SubmitPage() {
         {config?.question ?? " "}
       </h1>
       <p className="mt-7 text-sm text-muted">
-        Please add at least one word, but more are welcome!
+        Enter at least one word, but add more if you&apos;d like to!
       </p>
       <div className="mt-2">
         <input
@@ -92,7 +112,12 @@ export default function SubmitPage() {
             }
           }}
           placeholder="Type a word…"
-          className="w-full rounded-lg border border-border bg-card px-4 py-3 text-base outline-none focus:border-foreground/40"
+          aria-invalid={hasSpace}
+          className={`w-full rounded-lg border bg-card px-4 py-3 text-base outline-none ${
+            hasSpace
+              ? "border-group-b focus:border-group-b"
+              : "border-border focus:border-foreground/40"
+          }`}
         />
       </div>
 
@@ -101,7 +126,7 @@ export default function SubmitPage() {
       <div className="mt-auto">
         <button
           onClick={submit}
-          disabled={sending}
+          disabled={sending || hasSpace}
           style={{ backgroundColor: accent }}
           className="w-full rounded-xl px-4 py-3.5 text-base font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
         >

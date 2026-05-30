@@ -36,10 +36,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "words must be an array" }, { status: 400 });
   }
 
-  const cleaned = words
+  const trimmed = words
     .filter((w): w is string => typeof w === "string")
-    .map((w) => w.trim().replace(/\s+/g, " ").slice(0, MAX_WORD_LEN))
-    .filter((w) => w.length > 0)
+    .map((w) => w.trim())
+    .filter((w) => w.length > 0);
+
+  // Each entry must be a single word — reject anything with internal whitespace.
+  if (trimmed.some((w) => /\s/.test(w))) {
+    return NextResponse.json(
+      { error: "Please enter only one word — no spaces." },
+      { status: 400 },
+    );
+  }
+
+  const cleaned = trimmed
+    .map((w) => w.slice(0, MAX_WORD_LEN))
     .slice(0, MAX_WORDS_PER_SUBMIT);
 
   if (cleaned.length === 0) {

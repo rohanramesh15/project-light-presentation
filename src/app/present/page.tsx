@@ -264,7 +264,7 @@ function rectsOverlap(
   h: number,
   p: Placed,
 ): boolean {
-  const padX = 16;
+  const padX = 40;
   const padY = 12;
   return (
     Math.abs(x - p.x) * 2 < w + p.w + padX &&
