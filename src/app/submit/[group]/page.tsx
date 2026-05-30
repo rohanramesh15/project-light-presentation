@@ -53,7 +53,9 @@ export default function SubmitPage() {
   const groupName =
     group === "a" ? config?.group_a_name : config?.group_b_name;
 
-  const hasSpace = /\s/.test(pending.trim());
+  // Trailing/internal whitespace means they've started a second word. Ignore
+  // leading spaces since those get trimmed away on submit.
+  const hasSpace = /\s/.test(pending.trimStart());
 
   async function submit() {
     const word = pending.trim();
@@ -115,18 +117,18 @@ export default function SubmitPage() {
           aria-invalid={hasSpace}
           className={`w-full rounded-lg border bg-card px-4 py-3 text-base outline-none ${
             hasSpace
-              ? "border-group-b focus:border-group-b"
+              ? "border-red-500 focus:border-red-500"
               : "border-border focus:border-foreground/40"
           }`}
         />
       </div>
 
       {hasSpace ? (
-        <p className="mt-2 text-sm text-group-b">
+        <p className="mt-2 text-sm text-red-600">
           Please enter only one word at a time.
         </p>
       ) : (
-        error && <p className="mt-4 text-sm text-group-b">{error}</p>
+        error && <p className="mt-4 text-sm text-red-600">{error}</p>
       )}
 
       <div className="mt-auto">

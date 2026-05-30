@@ -11,6 +11,11 @@ type Config = {
 type WordEvent = { id: number; group_key: "a" | "b"; text: string };
 type Counts = Record<string, { text: string; count: number }>;
 
+// Show words with an uppercase first letter even if submitted lowercase.
+function capitalizeFirst(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 function addWord(counts: Counts, text: string): Counts {
   const key = text.toLowerCase();
   const existing = counts[key];
@@ -369,7 +374,7 @@ function WordCloud({
                   transition: "font-size 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
                 }}
               >
-                {p.text}
+                {capitalizeFirst(p.text)}
               </span>
             </div>
           ))}
